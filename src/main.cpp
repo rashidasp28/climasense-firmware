@@ -20,7 +20,8 @@ void connectToWifi() {
   }
 
   Serial.println();
-  Serial.println("WiFi connected");
+  Serial.print("WiFi connected. IP: ");
+  Serial.println(WiFi.localIP());
 }
 
 void connectToMqtt() {
@@ -32,31 +33,60 @@ void connectToMqtt() {
     if (mqttClient.connect(DEVICE_ID)) {
       Serial.println("connected");
     } else {
-      Serial.println("failed, retrying...");
+      Serial.print("failed, rc=");
+      Serial.println(mqttClient.state());
       delay(5000);
     }
   }
 }
 
 void publishReading(const ClimateReading& reading) {
-  char payload[512];
+  char payload[768];
 
   snprintf(
     payload,
     sizeof(payload),
-    "{\"device_id\":\"%s\",\"temperature_c\":%.2f,\"humidity_percent\":%.2f,\"pm25_ugm3\":%.2f}",
+    "{"
+    "\"device_id\":\"%s\"," 
+    "\"school_id\":\"%s\"," 
+    "\"community\":\"%s\"," 
+    "\"temperature_c\":%.2f," 
+    "\"humidity_percent\":%.2f," 
+    "\"heat_index_c\":%.2f," 
+    "\"pm25_ugm3\":%.2f," 
+    "\"pm10_ugm3\":%.2f," 
+    "\"soil_moisture_percent\":%.2f," 
+    "\"rainfall_mm\":%.2f," 
+    "\"battery_voltage\":%.2f," 
+    "\"wifi_rssi\":%d," 
+    "\"dht_healthy\":%s"
+    "}",
     DEVICE_ID,
+    SCHOOL_ID,
+    COMMUNITY_NAME,
     reading.temperatureC,
     reading.humidityPercent,
-    reading.pm25
+    reading.heatIndexC,
+    reading.pm25,
+    reading.pm10,
+    reading.soilMoisturePercent,
+    reading.rainfallMm,
+    reading.batteryVoltage,
+    WiFi.RSSI(),
+    reading.dhtHealthy ? "true" : "false"
   );
 
+  Serial.println("Publishing climate-health payload:");
   Serial.println(payload);
+
   mqttClient.publish(MQTT_TOPIC, payload);
 }
 
 void setup() {
   Serial.begin(115200);
+  delay(1000);
+
+  Serial.println("ClimaSense Firmware Starting...");
 
   initializeSensors();
   connectToWifi();
