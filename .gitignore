@@ -1,0 +1,39 @@
+# ClimaSense firmware ignores
+
+# PlatformIO
+.pio/
+.pioenvs/
+.piolibdeps/
+
+# Build outputs
+*.bin
+*.elf
+*.hex
+*.map
+*.o
+*.obj
+*.a
+*.lib
+*.so
+*.dylib
+*.dll
+*.exe
+
+# Local config and secrets
+include/config.h
+.env
+.env.*
+
+# Editor and IDE files
+.vscode/
+.idea/
+*.code-workspace
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs and temporary files
+*.log
+*.tmp
+*.bak
