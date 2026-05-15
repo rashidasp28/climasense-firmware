@@ -1,7 +1,17 @@
 #include <Arduino.h>
 #include <WiFi.h>
 #include <PubSubClient.h>
-#include "config.example.h"
+
+#ifdef __has_include
+  #if __has_include("config.h")
+    #include "config.h"
+  #else
+    #include "config.example.h"
+  #endif
+#else
+  #include "config.example.h"
+#endif
+
 #include "sensors.h"
 
 WiFiClient wifiClient;
