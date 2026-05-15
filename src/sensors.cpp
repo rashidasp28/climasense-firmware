@@ -1,15 +1,35 @@
 #include <Arduino.h>
 #include <DHT.h>
+#include "config.example.h"
 #include "sensors.h"
 
-#define DHTPIN 4
-#define DHTTYPE DHT22
+DHT dht(DHT_PIN, DHT_TYPE);
 
-DHT dht(DHTPIN, DHTTYPE);
+float readBatteryVoltage() {
+  int adcValue = analogRead(BATTERY_ADC_PIN);
+
+  float voltage = (
+    (adcValue * ADC_REFERENCE_VOLTAGE) / ADC_RESOLUTION
+  ) * BATTERY_DIVIDER_RATIO;
+
+  return voltage;
+}
+
+float readSoilMoisturePlaceholder() {
+  int adcValue = analogRead(SOIL_MOISTURE_ADC_PIN);
+
+  float percentage = map(adcValue, 0, 4095, 100, 0);
+
+  return percentage;
+}
 
 void initializeSensors() {
   Serial.println("Initializing ClimaSense sensor layer...");
+
   dht.begin();
+
+  pinMode(BATTERY_ADC_PIN, INPUT);
+  pinMode(SOIL_MOISTURE_ADC_PIN, INPUT);
 }
 
 ClimateReading readClimateSensors() {
@@ -31,12 +51,13 @@ ClimateReading readClimateSensors() {
   reading.humidityPercent = humidity;
   reading.heatIndexC = dht.computeHeatIndex(temperature, humidity, false);
 
-  // Placeholder values until physical sensors are integrated.
+  // Placeholder values until PM and rainfall sensors are integrated.
   reading.pm25 = 18.0;
   reading.pm10 = 40.0;
-  reading.soilMoisturePercent = 35.0;
   reading.rainfallMm = 0.0;
-  reading.batteryVoltage = 4.05;
+
+  reading.soilMoisturePercent = readSoilMoisturePlaceholder();
+  reading.batteryVoltage = readBatteryVoltage();
   reading.dhtHealthy = healthy;
 
   return reading;
