@@ -18,6 +18,7 @@ WiFiClient wifiClient;
 PubSubClient mqttClient(wifiClient);
 
 unsigned long lastPublish = 0;
+unsigned long lastWifiRetry = 0;
 const unsigned long publishIntervalMs = 60000;
 const unsigned long wifiTimeoutMs = 15000;
 const unsigned long mqttRetryDelayMs = 5000;
@@ -127,12 +128,9 @@ void setup() {
 }
 
 void loop() {
-  if (WiFi.status() != WL_CONNECTED) {
-    static unsigned long lastWifiRetry = 0;
-    if (millis() - lastWifiRetry > mqttRetryDelayMs) {
-      connectToWifi();
-      lastWifiRetry = millis();
-    }
+  if (WiFi.status() != WL_CONNECTED && millis() - lastWifiRetry > mqttRetryDelayMs) {
+    connectToWifi();
+    lastWifiRetry = millis();
   }
 
   if (mqttClient.connected()) {
