@@ -70,6 +70,7 @@ bool connectToMqtt() {
 }
 
 void publishReading(const ClimateReading& reading) {
+  const char* mqttTopic = MQTT_TOPIC;
   char payload[768];
 
   snprintf(
@@ -109,7 +110,7 @@ void publishReading(const ClimateReading& reading) {
   Serial.println(payload);
 
   if (connectToMqtt()) {
-    bool published = mqttClient.publish(MQTT_TOPIC, payload);
+    bool published = mqttClient.publish(mqttTopic, payload);
     Serial.println(published ? "MQTT publish successful" : "MQTT publish failed");
   } else {
     Serial.println("MQTT unavailable. Reading was not published.");
