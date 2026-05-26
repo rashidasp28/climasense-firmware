@@ -19,35 +19,53 @@ PubSubClient mqttClient(wifiClient);
 
 unsigned long lastPublish = 0;
 const unsigned long publishIntervalMs = 60000;
+const unsigned long wifiTimeoutMs = 15000;
+const unsigned long mqttRetryDelayMs = 5000;
 
-void connectToWifi() {
+bool connectToWifi() {
   Serial.print("Connecting to WiFi");
+  WiFi.mode(WIFI_STA);
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
 
-  while (WiFi.status() != WL_CONNECTED) {
+  unsigned long startAttempt = millis();
+  while (WiFi.status() != WL_CONNECTED && millis() - startAttempt < wifiTimeoutMs) {
     delay(500);
     Serial.print(".");
   }
 
   Serial.println();
-  Serial.print("WiFi connected. IP: ");
-  Serial.println(WiFi.localIP());
+
+  if (WiFi.status() == WL_CONNECTED) {
+    Serial.print("WiFi connected. IP: ");
+    Serial.println(WiFi.localIP());
+    return true;
+  }
+
+  Serial.println("WiFi connection failed. Device will continue running and retry later.");
+  return false;
 }
 
-void connectToMqtt() {
+bool connectToMqtt() {
+  if (WiFi.status() != WL_CONNECTED) {
+    return false;
+  }
+
   mqttClient.setServer(MQTT_HOST, MQTT_PORT);
 
-  while (!mqttClient.connected()) {
-    Serial.print("Connecting to MQTT...");
-
-    if (mqttClient.connect(DEVICE_ID)) {
-      Serial.println("connected");
-    } else {
-      Serial.print("failed, rc=");
-      Serial.println(mqttClient.state());
-      delay(5000);
-    }
+  if (mqttClient.connected()) {
+    return true;
   }
+
+  Serial.print("Connecting to MQTT...");
+
+  if (mqttClient.connect(DEVICE_ID)) {
+    Serial.println("connected");
+    return true;
+  }
+
+  Serial.print("failed, rc=");
+  Serial.println(mqttClient.state());
+  return false;
 }
 
 void publishReading(const ClimateReading& reading) {
@@ -82,14 +100,19 @@ void publishReading(const ClimateReading& reading) {
     reading.soilMoisturePercent,
     reading.rainfallMm,
     reading.batteryVoltage,
-    WiFi.RSSI(),
+    WiFi.status() == WL_CONNECTED ? WiFi.RSSI() : 0,
     reading.dhtHealthy ? "true" : "false"
   );
 
-  Serial.println("Publishing climate-health payload:");
+  Serial.println("Climate-health payload:");
   Serial.println(payload);
 
-  mqttClient.publish(MQTT_TOPIC, payload);
+  if (connectToMqtt()) {
+    bool published = mqttClient.publish(MQTT_TOPIC, payload);
+    Serial.println(published ? "MQTT publish successful" : "MQTT publish failed");
+  } else {
+    Serial.println("MQTT unavailable. Reading was not published.");
+  }
 }
 
 void setup() {
@@ -104,11 +127,17 @@ void setup() {
 }
 
 void loop() {
-  if (!mqttClient.connected()) {
-    connectToMqtt();
+  if (WiFi.status() != WL_CONNECTED) {
+    static unsigned long lastWifiRetry = 0;
+    if (millis() - lastWifiRetry > mqttRetryDelayMs) {
+      connectToWifi();
+      lastWifiRetry = millis();
+    }
   }
 
-  mqttClient.loop();
+  if (mqttClient.connected()) {
+    mqttClient.loop();
+  }
 
   unsigned long now = millis();
 
