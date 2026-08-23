@@ -29,6 +29,16 @@ Minimum prototype node:
 
 Sensor Node -> MQTT Broker -> API/Data Pipeline -> Dashboard -> Alerts
 
+## Development
+
+See the [local firmware development guide](docs/local-development.md) for PlatformIO setup, configuration, building, uploading, serial monitoring, and safe compiler-error reporting.
+
+Quick build:
+
+```bash
+pio run
+```
+
 ## Repository Status
 
 Initial MVP scaffold. Built for rapid UNICEF Venture Fund prototype development.
