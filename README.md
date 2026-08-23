@@ -29,6 +29,8 @@ Minimum prototype node:
 
 Sensor Node -> MQTT Broker -> API/Data Pipeline -> Dashboard -> Alerts
 
+See the [telemetry payload contract](docs/telemetry-payload.md) for field names, units, data-quality indicators, placeholder values, and compatibility rules.
+
 ## Development
 
 See the [local firmware development guide](docs/local-development.md) for PlatformIO setup, configuration, building, uploading, serial monitoring, and safe compiler-error reporting.
