@@ -14,11 +14,11 @@
 
 // Replace this example with the root CA certificate for your MQTT broker.
 // Root CA certificates are public trust anchors, not private device credentials.
-#define MQTT_ROOT_CA R"EOF(
+static const char MQTT_ROOT_CA[] = R"EOF(
 -----BEGIN CERTIFICATE-----
 REPLACE_WITH_BROKER_ROOT_CA_CERTIFICATE
 -----END CERTIFICATE-----
-)EOF"
+)EOF";
 
 #define DEVICE_ID "CS-GH-NR-0001"
 #define SCHOOL_ID "PILOT-SCHOOL-001"
