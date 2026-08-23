@@ -10,7 +10,7 @@ ClimaSense is an ISIR Ghana initiative for climate-resilient child health and ed
 - Temperature and humidity sensing
 - Particulate matter sensor support placeholder
 - Rainfall and soil moisture support placeholder
-- MQTT data publishing
+- Authenticated MQTT data publishing over certificate-validated TLS
 - Offline-safe serial logging
 - School-friendly code structure for learning and adaptation
 
