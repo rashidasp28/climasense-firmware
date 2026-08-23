@@ -20,7 +20,7 @@
 *.exe
 
 # Local config and secrets
-include/config.h
+include/climasense_config.h
 .env
 .env.*
 

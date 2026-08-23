@@ -1,6 +1,6 @@
 #include <Arduino.h>
 #include <DHT.h>
-#include "config.example.h"
+#include "config_loader.h"
 #include "sensors.h"
 
 DHT dht(DHT_PIN, DHT_TYPE);

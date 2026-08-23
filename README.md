@@ -10,7 +10,7 @@ ClimaSense is an ISIR Ghana initiative for climate-resilient child health and ed
 - Temperature and humidity sensing
 - Particulate matter sensor support placeholder
 - Rainfall and soil moisture support placeholder
-- MQTT data publishing
+- Authenticated MQTT data publishing over certificate-validated TLS
 - Offline-safe serial logging
 - School-friendly code structure for learning and adaptation
 
@@ -28,6 +28,16 @@ Minimum prototype node:
 ## Data Flow
 
 Sensor Node -> MQTT Broker -> API/Data Pipeline -> Dashboard -> Alerts
+
+## Development
+
+See the [local firmware development guide](docs/local-development.md) for PlatformIO setup, configuration, building, uploading, serial monitoring, and safe compiler-error reporting.
+
+Quick build:
+
+```bash
+pio run
+```
 
 ## Repository Status
 

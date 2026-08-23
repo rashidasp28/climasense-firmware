@@ -1,21 +1,12 @@
 #include <Arduino.h>
 #include <WiFi.h>
+#include <WiFiClientSecure.h>
 #include <PubSubClient.h>
-
-#ifdef __has_include
-  #if __has_include("config.h")
-    #include "config.h"
-  #else
-    #include "config.example.h"
-  #endif
-#else
-  #include "config.example.h"
-#endif
-
+#include "config_loader.h"
 #include "sensors.h"
 
-WiFiClient wifiClient;
-PubSubClient mqttClient(wifiClient);
+WiFiClientSecure secureWifiClient;
+PubSubClient mqttClient(secureWifiClient);
 
 unsigned long lastPublish = 0;
 unsigned long lastWifiRetry = 0;
@@ -52,6 +43,7 @@ bool connectToMqtt() {
   }
 
   mqttClient.setServer(MQTT_HOST, MQTT_PORT);
+  secureWifiClient.setCACert(MQTT_ROOT_CA);
 
   if (mqttClient.connected()) {
     return true;
@@ -59,7 +51,7 @@ bool connectToMqtt() {
 
   Serial.print("Connecting to MQTT...");
 
-  if (mqttClient.connect(DEVICE_ID)) {
+  if (mqttClient.connect(DEVICE_ID, MQTT_USERNAME, MQTT_PASSWORD)) {
     Serial.println("connected");
     return true;
   }

@@ -1,14 +1,24 @@
 #pragma once
 
-// Copy this file to config.h for real deployments.
+// Copy this file to climasense_config.h for real deployments.
 // Do not commit secrets.
 
 #define WIFI_SSID "YOUR_WIFI_NAME"
 #define WIFI_PASSWORD "YOUR_WIFI_PASSWORD"
 
-#define MQTT_HOST "broker.hivemq.com"
-#define MQTT_PORT 1883
-#define MQTT_TOPIC "climasense/ghana/northern/readings"
+#define MQTT_HOST "mqtt.example.com"
+#define MQTT_PORT 8883
+#define MQTT_TOPIC "climasense/example/readings"
+#define MQTT_USERNAME "YOUR_DEVICE_USERNAME"
+#define MQTT_PASSWORD "YOUR_DEVICE_PASSWORD"
+
+// Replace this example with the root CA certificate for your MQTT broker.
+// Root CA certificates are public trust anchors, not private device credentials.
+static const char MQTT_ROOT_CA[] = R"EOF(
+-----BEGIN CERTIFICATE-----
+REPLACE_WITH_BROKER_ROOT_CA_CERTIFICATE
+-----END CERTIFICATE-----
+)EOF";
 
 #define DEVICE_ID "CS-GH-NR-0001"
 #define SCHOOL_ID "PILOT-SCHOOL-001"
