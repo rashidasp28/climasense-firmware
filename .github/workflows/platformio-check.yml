@@ -18,6 +18,12 @@ jobs:
         with:
           python-version: '3.11'
 
+      - name: Test telemetry contract checker
+        run: python -m unittest discover -s tests -v
+
+      - name: Validate telemetry contract
+        run: python scripts/check_telemetry_contract.py
+
       - name: Install PlatformIO
         run: pip install platformio==6.1.19
 
